@@ -1,0 +1,359 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Municipalidad de La Serena</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #edf4fb, #dfeaf6);
+            color: #0f172a;
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #132b3f, #0f1f2f);
+            color: #eaf3ff;
+            padding: 24px 18px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 8px 24px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .brand-mark {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6ee7f9, #a78bfa);
+            color: #091827;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .nav {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav a {
+            color: rgba(255,255,255,0.82);
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .nav a:hover, .nav a.active {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(19, 45, 67, 0.9);
+            border-radius: 16px;
+            padding: 14px 18px;
+            color: white;
+            margin-bottom: 22px;
+        }
+
+        .search {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #dfeaf7;
+            padding: 10px 14px;
+            border-radius: 10px;
+            min-width: 260px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chip {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 8px 10px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1a3148, #19334a);
+            color: white;
+            border-radius: 18px;
+            padding: 28px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        .hero p {
+            margin: 8px 0 0;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .mini-btn {
+            background: rgba(255,255,255,0.08);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            width: 46px;
+            height: 46px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .stat {
+            padding: 18px 16px;
+            border-radius: 14px;
+            color: white;
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .stat.green { background: linear-gradient(135deg, #1ca394, #2ec7a5); }
+        .stat.blue { background: linear-gradient(135deg, #2e6ce3, #4ea6ff); }
+        .stat.cyan { background: linear-gradient(135deg, #1a6fbc, #2bb2d8); }
+        .stat.purple { background: linear-gradient(135deg, #5743a1, #9b74f1); }
+
+        .stat-label {
+            text-transform: uppercase;
+            font-size: 0.74rem;
+            letter-spacing: 0.08em;
+            opacity: 0.9;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+        }
+
+        .stat strong {
+            font-size: 2rem;
+        }
+
+        .trend {
+            background: rgba(255,255,255,0.15);
+            border-radius: 999px;
+            padding: 6px 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .bottom {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 18px;
+        }
+
+        .panel {
+            background: rgba(19, 45, 67, 0.88);
+            border-radius: 16px;
+            padding: 18px;
+            min-height: 250px;
+            color: white;
+        }
+
+        .chart {
+            position: relative;
+            height: 210px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.02);
+            overflow: hidden;
+        }
+
+        .line {
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 3px;
+            border-radius: 999px;
+        }
+
+        .line.a {
+            background: linear-gradient(90deg, #39d6c0, #90f4e6);
+            transform: skewY(-8deg) translateY(60px);
+            box-shadow: 0 0 18px rgba(57, 214, 192, 0.4);
+        }
+
+        .line.b {
+            background: linear-gradient(90deg, #bc7af8, #d9b5ff);
+            transform: skewY(8deg) translateY(120px);
+            box-shadow: 0 0 18px rgba(188, 122, 248, 0.35);
+        }
+
+        .side-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .metric {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 16px;
+            color: white;
+        }
+
+        .metric h3 {
+            margin: 0 0 10px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255,255,255,0.75);
+        }
+
+        .metric p { margin: 0; font-size: 2rem; font-weight: 700; }
+
+        @media (max-width: 900px) {
+            .app-shell { display: block; }
+            .sidebar { width: 100%; }
+            .stats { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
+            .bottom { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .stats { grid-template-columns: 1fr; }
+            .hero { flex-direction: column; align-items: flex-start; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand-mark">M</span>
+                <span>Municipalidad</span>
+            </div>
+
+            <nav class="nav">
+                <a class="active" href="/">Dashboard</a>
+                <a href="/admin/actividades/actividad/">Actividades</a>
+                <a href="/admin/servicios/serviciomunicipal/">Servicios</a>
+                <a href="/admin/auth/user/">Usuarios</a>
+                <a href="/admin/">Configuración</a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div class="search">Buscar...</div>
+                <div class="top-actions">
+                    <span class="chip">📧</span>
+                    <span class="chip">🔔</span>
+                    <span class="chip">Administrador</span>
+                </div>
+            </header>
+
+            <section class="hero">
+                <div>
+                    <h1>Dashboard One</h1>
+                    <p>Bienvenido al panel institucional</p>
+                </div>
+                <button class="mini-btn">+</button>
+            </section>
+
+            <section class="stats">
+                <div class="stat green">
+                    <span class="stat-label">Actividades</span>
+                    <div class="stat-row">
+                        <strong>10,000</strong>
+                        <span class="trend">+30%</span>
+                    </div>
+                </div>
+                <div class="stat blue">
+                    <span class="stat-label">Servicios</span>
+                    <div class="stat-row">
+                        <strong>5,000</strong>
+                        <span class="trend">+15%</span>
+                    </div>
+                </div>
+                <div class="stat cyan">
+                    <span class="stat-label">Ciudadanos</span>
+                    <div class="stat-row">
+                        <strong>70,000</strong>
+                        <span class="trend">+50%</span>
+                    </div>
+                </div>
+                <div class="stat purple">
+                    <span class="stat-label">Indicadores</span>
+                    <div class="stat-row">
+                        <strong>100,000</strong>
+                        <span class="trend">+80%</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bottom">
+                <div class="panel">
+                    <h2>Productos y servicios</h2>
+                    <div class="chart">
+                        <span class="line a"></span>
+                        <span class="line b"></span>
+                    </div>
+                </div>
+
+                <div class="side-stack">
+                    <div class="metric">
+                        <h3>Total visitas</h3>
+                        <p>6,859</p>
+                    </div>
+                    <div class="metric">
+                        <h3>Páginas vistas</h3>
+                        <p>7,469</p>
+                    </div>
+                    <div class="metric">
+                        <h3>Visitantes únicos</h3>
+                        <p>6,011</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
