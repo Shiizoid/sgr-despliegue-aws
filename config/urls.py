@@ -26,8 +26,6 @@ admin.site.index_template = 'admin/custom_index.html'
 urlpatterns = [
     path('', lambda request: redirect('/admin/')),
     path('admin/', admin.site.urls),
-    path('actividades/', include('actividades.urls')),
-    path('servicios/', include('servicios.urls')),
 ]
 
 if settings.DEBUG:
