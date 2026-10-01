@@ -5,11 +5,11 @@
 
 <div class="row my-3">
     <div class="col-md-8">
-        <a href="#" class="btn btn-primary">Agregar Nueva Actividad</a>
+        <a href="{% url 'actividades:crear' %}" class="btn btn-primary">Agregar nueva actividad</a>
     </div>
     <div class="col-md-4">
-        <form class="d-flex" action="#">
-            <input class="form-control me-2" type="search" placeholder="Buscar actividad..." aria-label="Buscar actividad">
+        <form class="d-flex" method="get" action="{% url 'actividades:lista' %}">
+            <input class="form-control me-2" type="search" name="q" value="{{ query }}" placeholder="Buscar actividad..." aria-label="Buscar actividad">
             <button class="btn btn-outline-success" type="submit">Buscar</button>
         </form>
     </div>
@@ -34,8 +34,8 @@
                 <td>{{ act.categoria.nombre }}</td>
                 <td>{{ act.fecha_registro|date:"d/m/Y H:i" }}</td>
                 <td>
-                    <a href="#" class="btn btn-sm btn-warning">Modificar</a>
-                    <a href="#" class="btn btn-sm btn-danger">Eliminar</a>
+                    <a href="{% url 'actividades:editar' act.pk %}" class="btn btn-sm btn-warning">Modificar</a>
+                    <a href="{% url 'actividades:eliminar' act.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
                 </td>
             </tr>
             {% empty %}
