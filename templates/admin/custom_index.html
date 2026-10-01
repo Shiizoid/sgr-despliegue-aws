@@ -1,0 +1,49 @@
+{% extends "admin/index.html" %}
+{% load static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'admin/custom_admin.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="municipal-dashboard">
+    <div class="dashboard-header">
+        <div>
+            <p class="eyebrow">Panel de administración</p>
+            <h1>Municipalidad de la Serena</h1>
+        </div>
+        <div class="badge">Sistema interno</div>
+    </div>
+
+    <div class="dashboard-cards">
+        <a class="dash-card" href="/admin/actividades/actividad/">
+            <span class="dash-icon">📋</span>
+            <span class="dash-title">Actividades</span>
+            <span class="dash-subtitle">Gestionar registros</span>
+        </a>
+
+        <a class="dash-card" href="/admin/servicios/serviciomunicipal/">
+            <span class="dash-icon">🏛️</span>
+            <span class="dash-title">Servicios</span>
+            <span class="dash-subtitle">Administrar servicios municipales</span>
+        </a>
+
+        <a class="dash-card" href="/admin/auth/user/">
+            <span class="dash-icon">👤</span>
+            <span class="dash-title">Usuarios</span>
+            <span class="dash-subtitle">Usuarios y accesos</span>
+        </a>
+
+        <a class="dash-card" href="/admin/">
+            <span class="dash-icon">⚙️</span>
+            <span class="dash-title">Configuración</span>
+            <span class="dash-subtitle">Administración general</span>
+        </a>
+    </div>
+
+    <div class="dashboard-footer">
+        {{ block.super }}
+    </div>
+</div>
+{% endblock %}
