@@ -7,43 +7,100 @@
 {% endblock %}
 
 {% block content %}
-<div class="municipal-dashboard">
-    <div class="dashboard-header">
-        <div>
-            <p class="eyebrow">Panel de administración</p>
-            <h1>Municipalidad de la Serena</h1>
+<div class="municipal-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="brand-mark">M</span>
+            <span class="brand-name">Municipalidad</span>
         </div>
-        <div class="badge">Sistema interno</div>
-    </div>
 
-    <div class="dashboard-cards">
-        <a class="dash-card" href="/admin/actividades/actividad/">
-            <span class="dash-icon">📋</span>
-            <span class="dash-title">Actividades</span>
-            <span class="dash-subtitle">Gestionar registros</span>
-        </a>
+        <nav class="nav-menu">
+            <a href="/admin/" class="nav-item active">Dashboard</a>
+            <a href="/admin/actividades/actividad/" class="nav-item">Actividades</a>
+            <a href="/admin/servicios/serviciomunicipal/" class="nav-item">Servicios</a>
+            <a href="/admin/auth/user/" class="nav-item">Usuarios</a>
+            <a href="/admin/" class="nav-item">Configuración</a>
+        </nav>
+    </aside>
 
-        <a class="dash-card" href="/admin/servicios/serviciomunicipal/">
-            <span class="dash-icon">🏛️</span>
-            <span class="dash-title">Servicios</span>
-            <span class="dash-subtitle">Administrar servicios municipales</span>
-        </a>
+    <main class="main-panel">
+        <header class="topbar">
+            <div class="search-box">
+                <span>Buscar...</span>
+            </div>
+            <div class="top-actions">
+                <span class="top-pill">📧</span>
+                <span class="top-pill">🔔</span>
+                <div class="user-chip">Administrador</div>
+            </div>
+        </header>
 
-        <a class="dash-card" href="/admin/auth/user/">
-            <span class="dash-icon">👤</span>
-            <span class="dash-title">Usuarios</span>
-            <span class="dash-subtitle">Usuarios y accesos</span>
-        </a>
+        <section class="welcome-card">
+            <div>
+                <h1>Dashboard One</h1>
+                <p>Bienvenido al panel institucional</p>
+            </div>
+            <button class="mini-btn">+</button>
+        </section>
 
-        <a class="dash-card" href="/admin/">
-            <span class="dash-icon">⚙️</span>
-            <span class="dash-title">Configuración</span>
-            <span class="dash-subtitle">Administración general</span>
-        </a>
-    </div>
+        <section class="stats-grid">
+            <article class="stat-box stat-green">
+                <span class="stat-label">Actividades</span>
+                <div class="stat-row">
+                    <strong>10,000</strong>
+                    <span class="stat-trend">+30%</span>
+                </div>
+            </article>
 
-    <div class="dashboard-footer">
-        {{ block.super }}
-    </div>
+            <article class="stat-box stat-blue">
+                <span class="stat-label">Servicios</span>
+                <div class="stat-row">
+                    <strong>5,000</strong>
+                    <span class="stat-trend">+15%</span>
+                </div>
+            </article>
+
+            <article class="stat-box stat-cyan">
+                <span class="stat-label">Ciudadanos</span>
+                <div class="stat-row">
+                    <strong>70,000</strong>
+                    <span class="stat-trend">+50%</span>
+                </div>
+            </article>
+
+            <article class="stat-box stat-purple">
+                <span class="stat-label">Indicadores</span>
+                <div class="stat-row">
+                    <strong>100,000</strong>
+                    <span class="stat-trend">+80%</span>
+                </div>
+            </article>
+        </section>
+
+        <section class="bottom-grid">
+            <div class="chart-panel wide-panel">
+                <h2>Productos y servicios</h2>
+                <div class="chart-placeholder">
+                    <span class="line line-one"></span>
+                    <span class="line line-two"></span>
+                </div>
+            </div>
+
+            <div class="side-panel">
+                <div class="mini-card">
+                    <h3>Total visitas</h3>
+                    <p>6,859</p>
+                </div>
+                <div class="mini-card">
+                    <h3>Páginas vistas</h3>
+                    <p>7,469</p>
+                </div>
+                <div class="mini-card">
+                    <h3>Visitantes únicos</h3>
+                    <p>6,011</p>
+                </div>
+            </div>
+        </section>
+    </main>
 </div>
 {% endblock %}
