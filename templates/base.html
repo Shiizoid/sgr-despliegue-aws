@@ -82,6 +82,9 @@
         .status::before { width: 7px; height: 7px; border-radius: 50%; background: #4b9b70; content: ''; }
         .status-inactive { color: #758184; }
         .status-inactive::before { background: #9aa7a5; }
+        .evidence-gallery { display: flex; flex-wrap: wrap; gap: 6px; }
+        .evidence-thumb { width: 58px; height: 48px; display: block; border: 1px solid var(--line); object-fit: cover; }
+        .evidence-empty { color: var(--muted); font-size: 11px; }
 
         .form-panel, .confirm-panel { max-width: 760px; padding: clamp(20px, 4vw, 32px); border: 1px solid var(--line); background: #fff; }
         .form-panel form { display: grid; gap: 19px; }

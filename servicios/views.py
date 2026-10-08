@@ -7,7 +7,7 @@ from .models import ServicioMunicipal
 
 def lista_servicios(request):
 	query = request.GET.get('q', '').strip()
-	servicios = ServicioMunicipal.objects.order_by('nombre_servicio')
+	servicios = ServicioMunicipal.objects.prefetch_related('evidencias').order_by('nombre_servicio')
 	if query:
 		servicios = servicios.filter(
 			Q(nombre_servicio__icontains=query)

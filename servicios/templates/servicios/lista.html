@@ -26,6 +26,7 @@
                     <th scope="col">Servicio</th>
                     <th scope="col">Responsable</th>
                     <th scope="col">Estado</th>
+                    <th scope="col">Evidencias</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
@@ -36,6 +37,21 @@
                         <td>{{ servicio.responsable }}</td>
                         <td><span class="status{% if not servicio.activo %} status-inactive{% endif %}">{% if servicio.activo %}Activo{% else %}Inactivo{% endif %}</span></td>
                         <td>
+                            {% with evidencias=servicio.evidencias.all %}
+                                {% if evidencias %}
+                                    <div class="evidence-gallery">
+                                        {% for evidencia in evidencias %}
+                                            <a href="{{ evidencia.imagen.url }}" target="_blank" rel="noopener noreferrer" aria-label="Ver evidencia: {{ evidencia.descripcion|default:servicio.nombre_servicio }}">
+                                                <img class="evidence-thumb" src="{{ evidencia.imagen.url }}" alt="{{ evidencia.descripcion|default:servicio.nombre_servicio }}" loading="lazy">
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <span class="evidence-empty">Sin imágenes</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
                             <div class="row-actions">
                                 <a href="{% url 'servicios:editar' servicio.pk %}" class="button button-secondary button-small">Modificar</a>
                                 <a href="{% url 'servicios:eliminar' servicio.pk %}" class="button button-danger button-small">Eliminar</a>
@@ -43,7 +59,7 @@
                         </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="4" class="empty-state">No hay servicios que mostrar.</td></tr>
+                    <tr><td colspan="5" class="empty-state">No hay servicios que mostrar.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
