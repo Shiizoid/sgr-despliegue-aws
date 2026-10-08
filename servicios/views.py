@@ -21,9 +21,11 @@ def lista_servicios(request):
 
 @login_required(login_url='/admin/login/')
 def crear_servicio(request):
-	form = ServicioMunicipalForm(request.POST or None)
+	form = ServicioMunicipalForm(request.POST or None, request.FILES or None)
 	if request.method == 'POST' and form.is_valid():
-		form.save()
+		servicio = form.save()
+		for imagen in request.FILES.getlist('imagenes'):
+			EvidenciaServicio.objects.create(servicio=servicio, imagen=imagen)
 		return redirect('servicios:lista')
 	return render(request, 'crud/formulario.html', {
 		'form': form,
@@ -36,9 +38,11 @@ def crear_servicio(request):
 @login_required(login_url='/admin/login/')
 def editar_servicio(request, pk):
 	servicio = get_object_or_404(ServicioMunicipal, pk=pk)
-	form = ServicioMunicipalForm(request.POST or None, instance=servicio)
+	form = ServicioMunicipalForm(request.POST or None, request.FILES or None, instance=servicio)
 	if request.method == 'POST' and form.is_valid():
-		form.save()
+		servicio = form.save()
+		for imagen in request.FILES.getlist('imagenes'):
+			EvidenciaServicio.objects.create(servicio=servicio, imagen=imagen)
 		return redirect('servicios:lista')
 	return render(request, 'crud/formulario.html', {
 		'form': form,

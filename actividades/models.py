@@ -18,3 +18,17 @@ class Actividad(models.Model):
 
 	def __str__(self):
 		return f"{self.codigo_evidencia} - {self.titulo}"
+
+
+class EvidenciaActividad(models.Model):
+	actividad = models.ForeignKey(
+		Actividad,
+		on_delete=models.CASCADE,
+		related_name='evidencias',
+	)
+	imagen = models.ImageField(upload_to='actividades/evidencias/%Y/%m/')
+	descripcion = models.CharField(max_length=160, blank=True)
+	fecha_subida = models.DateTimeField(auto_now_add=True)
+
+	def __str__(self):
+		return f'Evidencia de {self.actividad.titulo}'

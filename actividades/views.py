@@ -2,12 +2,12 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from .forms import ActividadForm
-from .models import Actividad
+from .models import Actividad, EvidenciaActividad
 
 
 def lista_actividades(request):
 	query = request.GET.get('q', '').strip()
-	actividades = Actividad.objects.select_related('categoria').order_by('-fecha_registro')
+	actividades = Actividad.objects.select_related('categoria').prefetch_related('evidencias').order_by('-fecha_registro')
 	if query:
 		actividades = actividades.filter(
 			Q(codigo_evidencia__icontains=query)
@@ -23,9 +23,11 @@ def lista_actividades(request):
 
 @login_required(login_url='/admin/login/')
 def crear_actividad(request):
-	form = ActividadForm(request.POST or None)
+	form = ActividadForm(request.POST or None, request.FILES or None)
 	if request.method == 'POST' and form.is_valid():
-		form.save()
+		actividad = form.save()
+		for imagen in request.FILES.getlist('imagenes'):
+			EvidenciaActividad.objects.create(actividad=actividad, imagen=imagen)
 		return redirect('actividades:lista')
 	return render(request, 'crud/formulario.html', {
 		'form': form,
@@ -38,9 +40,11 @@ def crear_actividad(request):
 @login_required(login_url='/admin/login/')
 def editar_actividad(request, pk):
 	actividad = get_object_or_404(Actividad, pk=pk)
-	form = ActividadForm(request.POST or None, instance=actividad)
+	form = ActividadForm(request.POST or None, request.FILES or None, instance=actividad)
 	if request.method == 'POST' and form.is_valid():
-		form.save()
+		actividad = form.save()
+		for imagen in request.FILES.getlist('imagenes'):
+			EvidenciaActividad.objects.create(actividad=actividad, imagen=imagen)
 		return redirect('actividades:lista')
 	return render(request, 'crud/formulario.html', {
 		'form': form,

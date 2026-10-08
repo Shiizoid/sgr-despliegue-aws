@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.urls import reverse
 from django.utils.html import format_html
 from .models import EvidenciaServicio, ServicioMunicipal
 
@@ -22,7 +23,12 @@ class EvidenciaServicioInline(admin.TabularInline):
 
 @admin.register(ServicioMunicipal)
 class ServicioMunicipalAdmin(admin.ModelAdmin):
-	list_display = ('id', 'nombre_servicio', 'responsable', 'activo')
+	list_display = ('id', 'nombre_servicio', 'responsable', 'activo', 'editar_enlace')
 	search_fields = ('nombre_servicio', 'responsable')
 	list_filter = ('activo',)
 	inlines = (EvidenciaServicioInline,)
+
+	@admin.display(description='Acción')
+	def editar_enlace(self, obj):
+		url = reverse('admin:servicios_serviciomunicipal_change', args=[obj.pk])
+		return format_html('<a href="{}">Editar</a>', url)

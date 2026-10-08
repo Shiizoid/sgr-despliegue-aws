@@ -2,7 +2,25 @@ from django import forms
 from .models import ServicioMunicipal
 
 
+class MultipleImageInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleImageField(forms.ImageField):
+    def clean(self, data, initial=None):
+        if not data:
+            return []
+        files = data if isinstance(data, (list, tuple)) else [data]
+        return [forms.ImageField.clean(self, uploaded_file, initial) for uploaded_file in files]
+
+
 class ServicioMunicipalForm(forms.ModelForm):
+    imagenes = MultipleImageField(
+        required=False,
+        label='Imágenes de evidencia',
+        widget=MultipleImageInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
+    )
+
     class Meta:
         model = ServicioMunicipal
         fields = ('nombre_servicio', 'responsable', 'activo')

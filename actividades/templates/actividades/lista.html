@@ -27,6 +27,7 @@
                     <th scope="col">Actividad</th>
                     <th scope="col">Categoría</th>
                     <th scope="col">Fecha de registro</th>
+                    <th scope="col">Evidencias</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
@@ -38,6 +39,21 @@
                         <td>{{ act.categoria.nombre }}</td>
                         <td>{{ act.fecha_registro|date:"d/m/Y H:i" }}</td>
                         <td>
+                            {% with evidencias=act.evidencias.all %}
+                                {% if evidencias %}
+                                    <div class="evidence-gallery">
+                                        {% for evidencia in evidencias %}
+                                            <a href="{{ evidencia.imagen.url }}" target="_blank" rel="noopener noreferrer" aria-label="Ver evidencia de {{ act.titulo }}">
+                                                <img class="evidence-thumb" src="{{ evidencia.imagen.url }}" alt="Evidencia de {{ act.titulo }}" loading="lazy">
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <span class="evidence-empty">Sin imágenes</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
                             <div class="row-actions">
                                 <a href="{% url 'actividades:editar' act.pk %}" class="button button-secondary button-small">Modificar</a>
                                 <a href="{% url 'actividades:eliminar' act.pk %}" class="button button-danger button-small">Eliminar</a>
@@ -45,7 +61,7 @@
                         </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="5" class="empty-state">No hay actividades que mostrar.</td></tr>
+                    <tr><td colspan="6" class="empty-state">No hay actividades que mostrar.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
