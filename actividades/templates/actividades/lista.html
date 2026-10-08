@@ -1,47 +1,54 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<h2>Listado de Actividades Registradas</h2>
+{% block title %}Actividades | Municipalidad de La Serena{% endblock %}
+{% block breadcrumb_title %}Actividades{% endblock %}
+{% block page_eyebrow %}Participación ciudadana{% endblock %}
+{% block page_title %}Actividades{% endblock %}
+{% block page_subtitle %}Consulta las actividades municipales y administra sus registros.{% endblock %}
+{% block page_actions %}
+    <a href="{% url 'actividades:crear' %}" class="button"><span aria-hidden="true">+</span>Agregar actividad</a>
+{% endblock %}
 
-<div class="row my-3">
-    <div class="col-md-8">
-        <a href="{% url 'actividades:crear' %}" class="btn btn-primary">Agregar nueva actividad</a>
-    </div>
-    <div class="col-md-4">
-        <form class="d-flex" method="get" action="{% url 'actividades:lista' %}">
-            <input class="form-control me-2" type="search" name="q" value="{{ query }}" placeholder="Buscar actividad..." aria-label="Buscar actividad">
-            <button class="btn btn-outline-success" type="submit">Buscar</button>
+{% block content %}
+<section aria-label="Listado de actividades">
+    <div class="toolbar">
+        <span class="record-count">Registros de actividades municipales</span>
+        <form class="search-form" method="get" action="{% url 'actividades:lista' %}">
+            <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Buscar por código, título o categoría" aria-label="Buscar actividades">
+            <button class="button button-secondary" type="submit">Buscar</button>
         </form>
     </div>
-</div>
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover mt-3">
-        <thead class="table-dark">
-            <tr>
-                <th>Código</th>
-                <th>Título</th>
-                <th>Categoría</th>
-                <th>Fecha</th>
-                <th>Acciones Visuales</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for act in actividades %}
-            <tr>
-                <td>{{ act.codigo_evidencia }}</td>
-                <td>{{ act.titulo }}</td>
-                <td>{{ act.categoria.nombre }}</td>
-                <td>{{ act.fecha_registro|date:"d/m/Y H:i" }}</td>
-                <td>
-                    <a href="{% url 'actividades:editar' act.pk %}" class="btn btn-sm btn-warning">Modificar</a>
-                    <a href="{% url 'actividades:eliminar' act.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5" class="text-center">No hay actividades registradas en la base de datos.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th scope="col">Código</th>
+                    <th scope="col">Actividad</th>
+                    <th scope="col">Categoría</th>
+                    <th scope="col">Fecha de registro</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for act in actividades %}
+                    <tr>
+                        <td>{{ act.codigo_evidencia }}</td>
+                        <td><span class="row-title">{{ act.titulo }}</span><span class="row-subtitle">{{ act.descripcion|truncatewords:15 }}</span></td>
+                        <td>{{ act.categoria.nombre }}</td>
+                        <td>{{ act.fecha_registro|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <div class="row-actions">
+                                <a href="{% url 'actividades:editar' act.pk %}" class="button button-secondary button-small">Modificar</a>
+                                <a href="{% url 'actividades:eliminar' act.pk %}" class="button button-danger button-small">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="empty-state">No hay actividades que mostrar.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
 {% endblock %}
