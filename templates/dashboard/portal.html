@@ -1,0 +1,451 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#123d43">
+    <title>Portal Municipal | Municipalidad de La Serena</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #17363a;
+            --muted: #637579;
+            --paper: #f5f7f4;
+            --white: #ffffff;
+            --green: #123d43;
+            --green-light: #1d5960;
+            --mint: #d8ebe2;
+            --coral: #d76d53;
+            --line: #dce5e1;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            min-width: 320px;
+        }
+
+        a { color: inherit; }
+
+        .layout {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 248px minmax(0, 1fr);
+        }
+
+        .rail {
+            background: var(--green);
+            color: #f2f7f3;
+            display: flex;
+            flex-direction: column;
+            padding: 28px 18px 20px;
+        }
+
+        .identity {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 8px 30px;
+            text-decoration: none;
+        }
+
+        .seal {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            border: 1px solid rgba(255,255,255,.55);
+            border-radius: 50%;
+            color: #f6c57f;
+            font-family: 'DM Serif Display', serif;
+            font-size: 21px;
+        }
+
+        .identity strong, .identity small { display: block; }
+        .identity strong { font-size: 14px; line-height: 1.2; }
+        .identity small { margin-top: 4px; color: #b9ceca; font-size: 11px; }
+
+        .rail-label {
+            margin: 0 10px 10px;
+            color: #9bb8b4;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .navigation { display: grid; gap: 5px; }
+
+        .navigation a {
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px;
+            border-radius: 5px;
+            color: #d5e2de;
+            font-size: 13px;
+            text-decoration: none;
+            transition: background .18s ease, color .18s ease;
+        }
+
+        .navigation a:hover, .navigation a[aria-current="page"] {
+            background: rgba(255,255,255,.12);
+            color: #fff;
+        }
+
+        .nav-mark {
+            width: 8px;
+            height: 8px;
+            border: 1px solid #9fc5b9;
+            border-radius: 2px;
+        }
+
+        .navigation a[aria-current="page"] .nav-mark {
+            border-color: #f6c57f;
+            background: #f6c57f;
+        }
+
+        .rail-note {
+            margin-top: auto;
+            padding: 16px 10px 4px;
+            border-top: 1px solid rgba(255,255,255,.15);
+            color: #b9ceca;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .content { min-width: 0; }
+
+        .topbar {
+            min-height: 74px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 14px clamp(22px, 4vw, 58px);
+            border-bottom: 1px solid var(--line);
+            background: rgba(255,255,255,.84);
+        }
+
+        .crumb { color: var(--muted); font-size: 12px; }
+        .crumb strong { color: var(--ink); font-weight: 600; }
+
+        .office-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .office-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #368b69;
+            box-shadow: 0 0 0 4px #e4f0e9;
+        }
+
+        .page {
+            width: min(1200px, 100%);
+            margin: 0 auto;
+            padding: 38px clamp(22px, 4vw, 58px) 48px;
+        }
+
+        .eyebrow {
+            margin: 0 0 12px;
+            color: #a65340;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .hero {
+            min-height: 310px;
+            display: grid;
+            grid-template-columns: 1.05fr .95fr;
+            overflow: hidden;
+            background: var(--green);
+            color: #fff;
+        }
+
+        .hero-copy {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding: clamp(26px, 4vw, 52px);
+        }
+
+        .hero .eyebrow { color: #f4c784; }
+
+        h1, h2, p { margin-top: 0; }
+
+        h1 {
+            max-width: 530px;
+            margin-bottom: 14px;
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(34px, 4vw, 53px);
+            font-weight: 400;
+            line-height: 1.04;
+        }
+
+        .hero-copy > p:not(.eyebrow) {
+            max-width: 410px;
+            margin-bottom: 24px;
+            color: #d2e2dd;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .hero-link {
+            min-height: 43px;
+            display: inline-flex;
+            align-items: center;
+            gap: 18px;
+            padding: 0 15px;
+            background: #f0c27f;
+            color: #233c39;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background .18s ease;
+        }
+
+        .hero-link:hover { background: #f8d69f; }
+
+        .hero-photo {
+            min-height: 310px;
+            position: relative;
+            background: #52716f;
+        }
+
+        .hero-photo img {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            inset: 0;
+            object-fit: cover;
+            object-position: center 48%;
+        }
+
+        .hero-photo::after {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(18,61,67,.34), transparent 42%);
+            content: '';
+        }
+
+        .modules { padding-top: 38px; }
+
+        .section-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 17px;
+        }
+
+        .section-heading .eyebrow { margin-bottom: 7px; }
+
+        h2 {
+            margin-bottom: 0;
+            font-family: 'DM Serif Display', serif;
+            font-size: 28px;
+            font-weight: 400;
+        }
+
+        .section-heading > p {
+            margin: 0 0 3px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .module {
+            min-height: 204px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 22px;
+            border: 1px solid var(--line);
+            background: var(--white);
+            transition: border-color .18s ease, transform .18s ease;
+        }
+
+        .module:hover {
+            transform: translateY(-2px);
+            border-color: #9bbdb0;
+        }
+
+        .module-kicker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            color: var(--muted);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .module-symbol {
+            width: 31px;
+            height: 31px;
+            display: grid;
+            place-items: center;
+            border: 1px solid #bad3c8;
+            color: var(--green);
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px;
+        }
+
+        .module h3 {
+            margin: 0 0 7px;
+            color: var(--ink);
+            font-size: 17px;
+        }
+
+        .module p {
+            max-width: 430px;
+            margin-bottom: 19px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .module-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: auto;
+            color: #1d6258;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .module-action:hover { color: #a65340; }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 34px;
+            padding-top: 15px;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        @media (max-width: 820px) {
+            .layout { grid-template-columns: 1fr; }
+            .rail { padding: 13px 18px; }
+            .identity { padding: 0 3px 12px; }
+            .rail-label, .rail-note { display: none; }
+            .navigation { display: flex; gap: 5px; overflow-x: auto; }
+            .navigation a { min-height: 38px; flex: 0 0 auto; padding: 0 10px; }
+            .hero { grid-template-columns: 1fr .8fr; }
+        }
+
+        @media (max-width: 600px) {
+            .topbar { min-height: 58px; }
+            .page { padding-top: 24px; }
+            .hero { grid-template-columns: 1fr; }
+            .hero-copy { min-height: 270px; }
+            .hero-photo { min-height: 190px; }
+            .module-grid { grid-template-columns: 1fr; }
+            .section-heading { align-items: flex-start; flex-direction: column; }
+            .footer { flex-direction: column; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="rail">
+            <a class="identity" href="{% url 'home' %}">
+                <span class="seal" aria-hidden="true">LS</span>
+                <span><strong>Municipalidad</strong><small>La Serena · Chile</small></span>
+            </a>
+            <p class="rail-label">Menú principal</p>
+            <nav class="navigation" aria-label="Menú principal">
+                <a href="{% url 'home' %}" aria-current="page"><span class="nav-mark" aria-hidden="true"></span>Inicio</a>
+                <a href="{% url 'actividades:lista' %}"><span class="nav-mark" aria-hidden="true"></span>Actividades</a>
+                <a href="{% url 'servicios:lista' %}"><span class="nav-mark" aria-hidden="true"></span>Servicios municipales</a>
+            </nav>
+            <p class="rail-note">Portal de gestión municipal<br>Información y herramientas para la comunidad.</p>
+        </aside>
+
+        <div class="content">
+            <header class="topbar">
+                <div class="crumb">Portal municipal <span aria-hidden="true">/</span> <strong>Inicio</strong></div>
+                <div class="office-label"><span class="office-dot" aria-hidden="true"></span>Municipalidad de La Serena</div>
+            </header>
+
+            <main class="page">
+                <section class="hero" aria-labelledby="welcome-title">
+                    <div class="hero-copy">
+                        <p class="eyebrow">Gestión local · Comunidad · Servicios</p>
+                        <h1 id="welcome-title">Una ciudad que avanza contigo.</h1>
+                        <p>Accede a la información municipal y encuentra en un solo lugar las actividades y servicios disponibles para la comunidad.</p>
+                        <a class="hero-link" href="{% url 'actividades:lista' %}">Explorar actividades <span aria-hidden="true">→</span></a>
+                    </div>
+                    <div class="hero-photo">
+                        <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&amp;fit=crop&amp;w=1200&amp;q=85" alt="Vista urbana al atardecer">
+                    </div>
+                </section>
+
+                <section class="modules" aria-labelledby="modules-title">
+                    <div class="section-heading">
+                        <div>
+                            <p class="eyebrow">Explora el portal</p>
+                            <h2 id="modules-title">Módulos municipales</h2>
+                        </div>
+                        <p>Selecciona un módulo para consultar sus registros.</p>
+                    </div>
+
+                    <div class="module-grid">
+                        <article class="module">
+                            <div class="module-kicker"><span class="module-symbol" aria-hidden="true">A</span>Participación ciudadana</div>
+                            <h3>Actividades</h3>
+                            <p>Revisa las actividades municipales, sus categorías y la información asociada.</p>
+                            <a class="module-action" href="{% url 'actividades:lista' %}">Abrir módulo <span aria-hidden="true">→</span></a>
+                        </article>
+
+                        <article class="module">
+                            <div class="module-kicker"><span class="module-symbol" aria-hidden="true">S</span>Atención a la comunidad</div>
+                            <h3>Servicios municipales</h3>
+                            <p>Consulta los servicios disponibles y la unidad o persona responsable.</p>
+                            <a class="module-action" href="{% url 'servicios:lista' %}">Abrir módulo <span aria-hidden="true">→</span></a>
+                        </article>
+                    </div>
+                </section>
+
+                <footer class="footer">
+                    <span>Municipalidad de La Serena</span>
+                    <span>Portal de información y gestión comunitaria</span>
+                </footer>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
