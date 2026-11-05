@@ -61,6 +61,8 @@ La aplicación continúa el proyecto anterior e incorpora:
 
 Después de aplicar las migraciones, crea la primera cuenta con `python manage.py createsuperuser`. Esa cuenta puede administrar usuarios y asignar perfiles en **Panel de gestión → Usuarios**. Para las cuentas siguientes, registra un correo válido, ya que el flujo de recuperación depende de él.
 
+El estado de superusuario de Django concede acceso total independientemente del grupo seleccionado. La interfaz lo identifica como `SUPERADMIN` junto al perfil asignado; cambiar su grupo no revoca los privilegios de superusuario.
+
 En desarrollo, el correo de recuperación se imprime en la consola. Para enviarlo desde AWS, configura el proveedor SMTP en el entorno de ejecución, sin subir credenciales al repositorio:
 
 ```dotenv

@@ -27,6 +27,11 @@ class CuentasAccessTests(TestCase):
             password='ClaveSegura123!',
             email='administrativo@example.com',
         )
+        cls.superadmin = user_model.objects.create_superuser(
+            username='superadmin',
+            password='ClaveSegura123!',
+            email='superadmin@example.com',
+        )
         cls._assign_permissions(cls.admin, 'Administrador', (
             ('view_user', 'auth'),
             ('add_user', 'auth'),
@@ -45,6 +50,7 @@ class CuentasAccessTests(TestCase):
             ('view_solicitudservicio', 'servicios'),
             ('add_solicitudservicio', 'servicios'),
         ))
+        cls.superadmin.groups.set((Group.objects.get(name='Administrativo'),))
         cls.servicio = ServicioMunicipal.objects.create(
             nombre_servicio='Atención municipal',
             responsable='Equipo de atención',
@@ -100,6 +106,17 @@ class CuentasAccessTests(TestCase):
         self.assertFalse(supervisor.permissions.filter(codename='delete_serviciomunicipal').exists())
         self.assertTrue(administrativo.permissions.filter(codename='add_solicitudservicio').exists())
         self.assertFalse(administrativo.permissions.filter(codename='change_serviciomunicipal').exists())
+
+    def test_superuser_keeps_full_access_and_is_labeled_beside_assigned_role(self):
+        self.client.force_login(self.superadmin)
+        response = self.client.get(reverse('cuentas:usuarios'))
+        self.assertContains(response, 'Administrativo')
+        self.assertContains(response, 'SUPERADMIN')
+
+        response = self.client.get(reverse('cuentas:dashboard'))
+        self.assertContains(response, 'Acceso Administrador · SUPERADMIN')
+        self.assertContains(response, 'conserva acceso total como superusuario')
+        self.assertTrue(self.superadmin.has_perm('servicios.delete_serviciomunicipal'))
 
     def test_administrator_can_create_a_user_with_a_role(self):
         self.client.force_login(self.admin)

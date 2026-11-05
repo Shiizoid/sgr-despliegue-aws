@@ -2,9 +2,9 @@
 
 {% block title %}Panel {{ perfil }} | Municipalidad de La Serena{% endblock %}
 {% block breadcrumb_title %}Panel de gestión{% endblock %}
-{% block page_eyebrow %}Acceso {{ perfil }}{% endblock %}
+{% block page_eyebrow %}Acceso {{ perfil }}{% if user.is_superuser %} · SUPERADMIN{% endif %}{% endblock %}
 {% block page_title %}Panel de gestión{% endblock %}
-{% block page_subtitle %}Herramientas disponibles para el perfil {{ perfil|lower }}.{% endblock %}
+{% block page_subtitle %}Herramientas disponibles para el perfil {{ perfil|lower }}.{% if user.is_superuser %} Esta cuenta conserva acceso total como superusuario.{% endif %}{% endblock %}
 {% block page_actions %}
     {% if perms.servicios.add_solicitudservicio %}
         <a class="button" href="{% url 'servicios:solicitud_crear' %}">Registrar solicitud</a>
