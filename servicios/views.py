@@ -69,7 +69,7 @@ def eliminar_servicio(request, pk):
 @login_required
 @permission_required('servicios.view_solicitudservicio', raise_exception=True)
 def lista_solicitudes(request):
-	solicitudes = SolicitudServicio.objects.select_related('servicio', 'solicitante')
+	solicitudes = SolicitudServicio.objects.select_related('servicio', 'solicitante__perfil')
 	if not request.user.has_perm('servicios.change_solicitudservicio'):
 		solicitudes = solicitudes.filter(solicitante=request.user)
 	query = request.GET.get('q', '').strip()

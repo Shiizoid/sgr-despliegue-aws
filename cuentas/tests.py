@@ -1,3 +1,8 @@
+from io import BytesIO
+from tempfile import TemporaryDirectory
+
+from PIL import Image
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.core import mail
@@ -134,6 +139,59 @@ class CuentasAccessTests(TestCase):
         created = get_user_model().objects.get(username='nuevo-supervisor')
         self.assertEqual(created.email, 'nuevo.supervisor@example.com')
         self.assertTrue(created.groups.filter(name='Supervisor').exists())
+        self.assertTrue(hasattr(created, 'perfil'))
+
+    def test_user_can_update_own_name_last_name_and_profile_image(self):
+        image_buffer = BytesIO()
+        Image.new('RGB', (8, 8), color='teal').save(image_buffer, format='PNG')
+        image = SimpleUploadedFile(
+            'foto.png',
+            image_buffer.getvalue(),
+            content_type='image/png',
+        )
+        self.client.force_login(self.administrativo)
+        with TemporaryDirectory() as media_root:
+            with override_settings(MEDIA_ROOT=media_root):
+                response = self.client.post(reverse('cuentas:perfil'), {
+                    'first_name': 'Mauricio',
+                    'last_name': 'Muñiz',
+                    'imagen': image,
+                })
+                self.assertRedirects(response, reverse('cuentas:perfil'))
+                self.administrativo.refresh_from_db()
+                self.assertEqual(self.administrativo.first_name, 'Mauricio')
+                self.assertEqual(self.administrativo.last_name, 'Muñiz')
+                self.assertTrue(self.administrativo.perfil.imagen)
+                response = self.client.get(reverse('cuentas:perfil'))
+                self.assertContains(response, 'Mauricio Muñiz')
+                self.assertContains(response, self.administrativo.perfil.imagen.url)
+                self.assertContains(response, 'Editar perfil de Mauricio Muñiz')
+
+                response = self.client.post(reverse('cuentas:perfil'), {
+                    'first_name': 'Mauricio',
+                    'last_name': 'Muñiz',
+                    'imagen-clear': 'on',
+                })
+                self.assertRedirects(response, reverse('cuentas:perfil'))
+                self.administrativo.perfil.refresh_from_db()
+                self.assertFalse(self.administrativo.perfil.imagen)
+
+                self.client.force_login(self.administrativo)
+                response = self.client.post(reverse('cuentas:perfil'), {
+                    'first_name': 'Mauricio',
+                    'last_name': 'Muñiz',
+                    'imagen': SimpleUploadedFile(
+                        'foto-lista.png',
+                        image_buffer.getvalue(),
+                        content_type='image/png',
+                    ),
+                })
+                self.assertRedirects(response, reverse('cuentas:perfil'))
+                self.administrativo.perfil.refresh_from_db()
+                self.client.force_login(self.admin)
+                response = self.client.get(reverse('cuentas:usuarios'))
+                self.assertContains(response, 'Mauricio Muñiz')
+                self.assertContains(response, self.administrativo.perfil.imagen.url)
 
     @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_password_reset_email_link_changes_password(self):

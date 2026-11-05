@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 
+from .models import PerfilUsuario
 
 ROLE_NAMES = ('Administrador', 'Supervisor', 'Administrativo')
 
@@ -80,3 +81,39 @@ class UsuarioUpdateForm(forms.ModelForm):
         if commit:
             user.groups.set((self.cleaned_data['rol'],))
         return user
+
+
+class PerfilPropioForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ('first_name', 'last_name')
+        labels = {
+            'first_name': 'Nombre',
+            'last_name': 'Apellido',
+        }
+
+    imagen = forms.ImageField(
+        label='Foto de perfil',
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.perfil = kwargs.pop('perfil')
+        super().__init__(*args, **kwargs)
+        self.fields['imagen'].initial = self.perfil.imagen
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+
+    def save(self, commit=True):
+        usuario = super().save(commit=commit)
+        if commit:
+            imagen = self.cleaned_data.get('imagen')
+            if imagen is False:
+                self.perfil.imagen.delete(save=False)
+                self.perfil.imagen = ''
+                self.perfil.save(update_fields=('imagen',))
+            elif imagen:
+                self.perfil.imagen = imagen
+                self.perfil.save(update_fields=('imagen',))
+        return usuario

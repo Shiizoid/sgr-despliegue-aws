@@ -9,8 +9,10 @@ def user_role(request):
         (name for name in ROLE_MODELS if request.user.groups.filter(name=name).exists()),
         'Administrador' if request.user.is_superuser else 'Sin perfil asignado',
     )
+    perfil = getattr(request.user, 'perfil', None)
     return {
         'role_label': role,
         'can_manage_users': request.user.is_superuser or role == 'Administrador',
         'is_superadmin': request.user.is_superuser,
+        'user_profile': perfil,
     }

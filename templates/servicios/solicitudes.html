@@ -30,7 +30,17 @@
                     <tr>
                         <td>#{{ solicitud.pk }}</td>
                         <td>{{ solicitud.servicio.nombre_servicio }}</td>
-                        <td>{{ solicitud.solicitante.username }}<span class="row-subtitle">{{ solicitud.telefono }}</span></td>
+                        <td>
+                            <span class="user-avatar">
+                                {% if solicitud.solicitante.perfil.imagen %}
+                                    <img src="{{ solicitud.solicitante.perfil.imagen.url }}" alt="Foto de {{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}">
+                                {% else %}
+                                    {{ solicitud.solicitante.first_name|first|default:solicitud.solicitante.username|first|upper }}{{ solicitud.solicitante.last_name|first|upper }}
+                                {% endif %}
+                            </span>
+                            {{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}
+                            <span class="row-subtitle">{{ solicitud.solicitante.username }} · {{ solicitud.telefono }}</span>
+                        </td>
                         <td>{{ solicitud.descripcion|truncatewords:18 }}</td>
                         <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
                         <td>{{ solicitud.get_estado_display }}</td>

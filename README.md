@@ -75,6 +75,8 @@ EMAIL_USE_TLS=True
 DEFAULT_FROM_EMAIL=no-reply@example.com
 ```
 
+Cada usuario puede actualizar su nombre, apellido y foto desde el acceso a su perfil, en la parte inferior del menú lateral. En AWS, configura `MEDIA_ROOT=/var/www/sgr-media` para que las imágenes se guarden en la carpeta servida por `deploy/sgr-media.conf`; asegúrate de que el usuario que ejecuta Django tenga permisos de escritura allí.
+
 Para un integrante, la implementación incluye los dos mantenedores y una transacción mínimos. Si el equipo tiene más integrantes, agrega dos mantenedores y una transacción por cada integrante adicional, según la pauta.
 
 Ejecuta las validaciones con:

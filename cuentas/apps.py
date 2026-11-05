@@ -6,4 +6,4 @@ class CuentasConfig(AppConfig):
     name = 'cuentas'
 
     def ready(self):
-        from . import roles
+        from . import roles, signals

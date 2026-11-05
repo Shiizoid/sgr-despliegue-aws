@@ -6,7 +6,8 @@ from django.contrib import messages
 
 from actividades.models import Actividad
 from servicios.models import ServicioMunicipal, SolicitudServicio
-from .forms import UsuarioCreationForm, UsuarioUpdateForm
+from .forms import PerfilPropioForm, UsuarioCreationForm, UsuarioUpdateForm
+from .models import PerfilUsuario
 from .roles import ROLE_MODELS
 
 
@@ -29,7 +30,7 @@ def dashboard(request):
         'total_servicios': ServicioMunicipal.objects.count() if request.user.has_perm('servicios.view_serviciomunicipal') else None,
         'total_solicitudes': solicitudes.count() if request.user.has_perm('servicios.view_solicitudservicio') else None,
         'total_usuarios': get_user_model().objects.count() if profile == 'Administrador' else None,
-        'ultimas_solicitudes': solicitudes.select_related('servicio').order_by('-fecha_solicitud')[:5],
+        'ultimas_solicitudes': solicitudes.select_related('servicio', 'solicitante__perfil').order_by('-fecha_solicitud')[:5],
     }
     return render(request, 'dashboard/index.html', context)
 
@@ -37,7 +38,7 @@ def dashboard(request):
 @login_required
 @permission_required('auth.view_user', raise_exception=True)
 def lista_usuarios(request):
-    usuarios = get_user_model().objects.prefetch_related('groups').order_by('username')
+    usuarios = get_user_model().objects.select_related('perfil').prefetch_related('groups').order_by('username')
     return render(request, 'cuentas/usuarios.html', {'usuarios': usuarios})
 
 
@@ -72,3 +73,19 @@ def editar_usuario(request, pk):
         'texto_boton': 'Guardar cambios',
         'url_cancelar': 'cuentas:usuarios',
     })
+
+
+@login_required
+def editar_perfil_propio(request):
+    perfil, _ = PerfilUsuario.objects.get_or_create(usuario=request.user)
+    form = PerfilPropioForm(
+        request.POST or None,
+        request.FILES or None,
+        instance=request.user,
+        perfil=perfil,
+    )
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Tu nombre, apellido y foto de perfil se actualizaron.')
+        return redirect('cuentas:perfil')
+    return render(request, 'cuentas/perfil.html', {'form': form, 'perfil': perfil})

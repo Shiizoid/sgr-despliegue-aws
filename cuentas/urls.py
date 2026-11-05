@@ -28,6 +28,7 @@ urlpatterns = [
         template_name='cuentas/password_reset_complete.html',
     ), name='password_reset_complete'),
     path('panel/', views.dashboard, name='dashboard'),
+    path('perfil/', views.editar_perfil_propio, name='perfil'),
     path('usuarios/', views.lista_usuarios, name='usuarios'),
     path('usuarios/nuevo/', views.crear_usuario, name='usuario_crear'),
     path('usuarios/<int:pk>/editar/', views.editar_usuario, name='usuario_editar'),

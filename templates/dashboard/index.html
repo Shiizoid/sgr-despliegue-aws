@@ -55,7 +55,7 @@
                     {% for solicitud in ultimas_solicitudes %}
                         <tr>
                             <td>{{ solicitud.servicio.nombre_servicio }}</td>
-                            <td>{{ solicitud.solicitante.username }}</td>
+                            <td>{{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</td>
                             <td>{{ solicitud.get_estado_display }}</td>
                             <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
                         </tr>

@@ -114,8 +114,47 @@
             background: #f6c57f;
         }
 
-        .rail-note {
+        .rail-profile {
             margin-top: auto;
+            padding: 16px 4px 0;
+            border-top: 1px solid rgba(255,255,255,.15);
+        }
+
+        .rail-profile-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 5px;
+            color: #f2f7f3;
+            text-decoration: none;
+        }
+
+        .rail-profile-link:hover { background: rgba(255,255,255,.12); }
+
+        .rail-avatar {
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 auto;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,.45);
+            border-radius: 50%;
+            background: #d8ebe2;
+            color: #123d43;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .rail-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .rail-profile-name { min-width: 0; }
+        .rail-profile-name strong, .rail-profile-name small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rail-profile-name strong { font-size: 12px; }
+        .rail-profile-name small { margin-top: 4px; color: #b9ceca; font-size: 10px; }
+
+        .rail-note {
+            margin: 0;
             padding: 16px 10px 4px;
             border-top: 1px solid rgba(255,255,255,.15);
             color: #b9ceca;
@@ -400,6 +439,23 @@
                     <a href="{% url 'cuentas:login' %}"><span class="nav-mark" aria-hidden="true"></span>Iniciar sesión</a>
                 {% endif %}
             </nav>
+            {% if user.is_authenticated %}
+                <div class="rail-profile">
+                    <a class="rail-profile-link" href="{% url 'cuentas:perfil' %}" aria-label="Editar perfil de {{ user.get_full_name|default:user.username }}">
+                        <span class="rail-avatar">
+                            {% if user_profile.imagen %}
+                                <img src="{{ user_profile.imagen.url }}" alt="Foto de {{ user.get_full_name|default:user.username }}">
+                            {% else %}
+                                {{ user.first_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}
+                            {% endif %}
+                        </span>
+                        <span class="rail-profile-name">
+                            <strong>{{ user.get_full_name|default:user.username }}</strong>
+                            <small>{{ role_label }} · Editar perfil</small>
+                        </span>
+                    </a>
+                </div>
+            {% endif %}
             <p class="rail-note">Portal de gestión municipal<br>Información y herramientas para la comunidad.</p>
         </aside>
 

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi perfil | Municipalidad de La Serena{% endblock %}
+{% block breadcrumb_title %}Mi perfil{% endblock %}
+{% block page_eyebrow %}Cuenta personal{% endblock %}
+{% block page_title %}Mi perfil{% endblock %}
+{% block page_subtitle %}Actualiza el nombre, apellido y foto que se muestran en el sistema.{% endblock %}
+
+{% block content %}
+<section class="form-panel" aria-label="Editar perfil personal">
+    {% if perfil.imagen %}
+        <p><img src="{{ perfil.imagen.url }}" alt="Foto de perfil actual" class="user-avatar" style="width: 88px; height: 88px;"></p>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+            <div>
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.name == 'imagen' and perfil.imagen %}
+                    <div class="form-help">Selecciona la casilla de la imagen para quitar la foto actual.</div>
+                {% endif %}
+                {% for error in field.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+            </div>
+        {% endfor %}
+        {% for error in form.non_field_errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+        <div class="form-actions">
+            <button type="submit" class="button">Guardar perfil</button>
+            <a href="{% url 'cuentas:dashboard' %}" class="button button-secondary">Cancelar</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
