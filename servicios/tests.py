@@ -63,6 +63,7 @@ class SolicitudServicioTests(TestCase):
         self.client.force_login(self.solicitante)
         response = self.client.post(reverse('servicios:solicitud_crear'), {
             'servicio': self.servicio.pk,
+            'tipo_solicitud': SolicitudServicio.TipoSolicitud.CONSULTA,
             'telefono': '+56 9 9999 8888',
             'descripcion': 'Solicito orientación sobre el servicio.',
         })
@@ -70,7 +71,20 @@ class SolicitudServicioTests(TestCase):
         solicitud = SolicitudServicio.objects.get(telefono='+56 9 9999 8888')
         self.assertEqual(solicitud.solicitante, self.solicitante)
         self.assertEqual(solicitud.servicio, self.servicio)
+        self.assertEqual(solicitud.tipo_solicitud, SolicitudServicio.TipoSolicitud.CONSULTA)
         self.assertEqual(solicitud.estado, SolicitudServicio.Estado.PENDIENTE)
+
+    def test_request_form_shows_compact_suboptions_after_selecting_a_service(self):
+        self.client.force_login(self.solicitante)
+        response = self.client.get(reverse('servicios:solicitud_crear'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Consulta / información')
+        self.assertContains(response, 'Trámite / permiso')
+        self.assertContains(response, 'Reclamo')
+        self.assertContains(response, 'Reparación / mantención')
+        self.assertContains(response, 'Seguimiento')
+        self.assertContains(response, 'id="request-options"')
+        self.assertContains(response, 'Enviando...')
 
     def test_users_only_see_their_own_requests_and_cannot_change_status(self):
         SolicitudServicio.objects.create(

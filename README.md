@@ -56,6 +56,7 @@ La aplicación continúa el proyecto anterior e incorpora:
 - Perfiles `Administrador`, `Supervisor` y `Administrativo`, creados automáticamente al ejecutar las migraciones.
 - Mantenedores de actividades y servicios con permisos por perfil; las operaciones se hacen con Django Templates.
 - Solicitudes de servicio relacionadas con el usuario autenticado y un servicio municipal. El administrador y supervisor pueden cambiar su estado; el perfil administrativo solo consulta sus propias solicitudes.
+- Al registrar una solicitud, seleccionar el servicio despliega opciones compactas: consulta, trámite, reclamo, reparación, seguimiento u otro. El botón evita envíos repetidos por doble clic.
 - Recuperación de contraseña mediante enlace firmado y de un solo uso.
 - Panel con navegación e indicadores acordes al perfil.
 
@@ -75,7 +76,7 @@ EMAIL_USE_TLS=True
 DEFAULT_FROM_EMAIL=no-reply@example.com
 ```
 
-Cada usuario puede actualizar su nombre, apellido y foto desde el acceso a su perfil, en la parte inferior del menú lateral. En AWS, configura `MEDIA_ROOT=/var/www/sgr-media` para que las imágenes se guarden en la carpeta servida por `deploy/sgr-media.conf`; asegúrate de que el usuario que ejecuta Django tenga permisos de escritura allí.
+Cada usuario puede actualizar su nombre, apellido y foto desde el acceso a su perfil, en la parte inferior del menú lateral. En AWS, configura `MEDIA_ROOT=/var/www/sgr-media` y asegúrate de que el usuario que ejecuta Django tenga permisos de escritura allí. Los archivos multimedia se sirven por Django después de autenticar; no expongas `MEDIA_ROOT` con un `Alias` de Apache ni un `alias` de Nginx, porque eso omite los controles de acceso.
 
 ### Mantener la aplicación activa en AWS
 

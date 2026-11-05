@@ -6,6 +6,8 @@ from .forms import ServicioMunicipalForm, SolicitudEstadoForm, SolicitudServicio
 from .models import ServicioMunicipal, SolicitudServicio
 
 
+@login_required
+@permission_required('servicios.view_serviciomunicipal', raise_exception=True)
 def lista_servicios(request):
 	query = request.GET.get('q', '').strip()
 	servicios = ServicioMunicipal.objects.prefetch_related('evidencias').order_by('nombre_servicio')
@@ -95,11 +97,9 @@ def crear_solicitud(request):
 		solicitud.save()
 		messages.success(request, 'La solicitud se registró correctamente.')
 		return redirect('servicios:solicitudes')
-	return render(request, 'crud/formulario.html', {
+	return render(request, 'servicios/solicitud_formulario.html', {
 		'form': form,
 		'titulo': 'Registrar solicitud de servicio',
-		'texto_boton': 'Enviar solicitud',
-		'url_cancelar': 'servicios:solicitudes',
 	})
 
 

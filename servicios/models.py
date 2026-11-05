@@ -27,6 +27,14 @@ class EvidenciaServicio(models.Model):
 
 
 class SolicitudServicio(models.Model):
+	class TipoSolicitud(models.TextChoices):
+		CONSULTA = 'consulta', 'Consulta / información'
+		TRAMITE = 'tramite', 'Trámite / permiso'
+		RECLAMO = 'reclamo', 'Reclamo'
+		REPARACION = 'reparacion', 'Reparación / mantención'
+		SEGUIMIENTO = 'seguimiento', 'Seguimiento'
+		OTRO = 'otro', 'Otro'
+
 	class Estado(models.TextChoices):
 		PENDIENTE = 'pendiente', 'Pendiente'
 		EN_REVISION = 'en_revision', 'En revisión'
@@ -42,6 +50,11 @@ class SolicitudServicio(models.Model):
 		ServicioMunicipal,
 		on_delete=models.PROTECT,
 		related_name='solicitudes',
+	)
+	tipo_solicitud = models.CharField(
+		max_length=20,
+		choices=TipoSolicitud.choices,
+		default=TipoSolicitud.OTRO,
 	)
 	telefono = models.CharField(
 		max_length=20,

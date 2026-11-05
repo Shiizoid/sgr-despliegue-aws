@@ -40,9 +40,15 @@ class ServicioMunicipalForm(forms.ModelForm):
 
 
 class SolicitudServicioForm(forms.ModelForm):
+    tipo_solicitud = forms.ChoiceField(
+        choices=SolicitudServicio.TipoSolicitud.choices,
+        widget=forms.RadioSelect,
+        label='Tipo de solicitud',
+    )
+
     class Meta:
         model = SolicitudServicio
-        fields = ('servicio', 'telefono', 'descripcion')
+        fields = ('servicio', 'tipo_solicitud', 'telefono', 'descripcion')
         labels = {
             'servicio': 'Servicio solicitado',
             'telefono': 'Teléfono de contacto',
@@ -55,7 +61,9 @@ class SolicitudServicioForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['servicio'].queryset = ServicioMunicipal.objects.filter(activo=True).order_by('nombre_servicio')
-        for field in self.fields.values():
+        for name, field in self.fields.items():
+            if name == 'tipo_solicitud':
+                continue
             field.widget.attrs['class'] = 'form-select' if isinstance(field.widget, forms.Select) else 'form-control'
 
 

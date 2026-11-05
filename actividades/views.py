@@ -1,10 +1,12 @@
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from .forms import ActividadForm
 from .models import Actividad, EvidenciaActividad
 
 
+@login_required
+@permission_required('actividades.view_actividad', raise_exception=True)
 def lista_actividades(request):
 	query = request.GET.get('q', '').strip()
 	actividades = Actividad.objects.select_related('categoria').prefetch_related('evidencias').order_by('-fecha_registro')

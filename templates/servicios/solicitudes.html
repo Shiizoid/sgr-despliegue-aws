@@ -29,7 +29,10 @@
                 {% for solicitud in solicitudes %}
                     <tr>
                         <td>#{{ solicitud.pk }}</td>
-                        <td>{{ solicitud.servicio.nombre_servicio }}</td>
+                        <td>
+                            {{ solicitud.servicio.nombre_servicio }}
+                            <span class="row-subtitle">{{ solicitud.get_tipo_solicitud_display }}</span>
+                        </td>
                         <td>
                             <span class="user-avatar">
                                 {% if solicitud.solicitante.perfil.imagen %}

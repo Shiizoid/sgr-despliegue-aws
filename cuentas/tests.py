@@ -10,6 +10,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from urllib.parse import urlsplit
 
+from actividades.models import Actividad, Categoria, EvidenciaActividad
 from servicios.models import ServicioMunicipal
 
 
@@ -83,6 +84,14 @@ class CuentasAccessTests(TestCase):
         self.assertContains(response, 'Acceso Administrativo')
 
     def test_permissions_are_enforced_by_views_not_only_navigation(self):
+        user_without_permissions = get_user_model().objects.create_user(
+            username='sin-permisos-listados',
+            password='ClaveSegura123!',
+        )
+        self.client.force_login(user_without_permissions)
+        self.assertEqual(self.client.get(reverse('actividades:lista')).status_code, 403)
+        self.assertEqual(self.client.get(reverse('servicios:lista')).status_code, 403)
+
         self.client.force_login(self.administrativo)
         self.assertEqual(self.client.get(reverse('actividades:crear')).status_code, 403)
 
@@ -96,10 +105,64 @@ class CuentasAccessTests(TestCase):
     def test_builtin_admin_site_is_not_exposed(self):
         self.assertEqual(self.client.get('/admin/').status_code, 404)
 
-    def test_public_portal_and_maintainer_lists_render(self):
-        for path in ('/', reverse('actividades:lista'), reverse('servicios:lista')):
+    def test_public_portal_is_available_but_data_lists_require_login(self):
+        self.assertEqual(self.client.get('/').status_code, 200)
+
+        for path in (reverse('actividades:lista'), reverse('servicios:lista')):
             with self.subTest(path=path):
-                self.assertEqual(self.client.get(path).status_code, 200)
+                response = self.client.get(path)
+                self.assertRedirects(
+                    response,
+                    f"{reverse('cuentas:login')}?next={path}",
+                )
+
+        self.client.force_login(self.administrativo)
+        self.assertEqual(self.client.get(reverse('actividades:lista')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('servicios:lista')).status_code, 200)
+
+    def test_media_requires_authentication_and_view_permission(self):
+        image_buffer = BytesIO()
+        Image.new('RGB', (8, 8), color='teal').save(image_buffer, format='PNG')
+        image = SimpleUploadedFile(
+            'evidence.png',
+            image_buffer.getvalue(),
+            content_type='image/png',
+        )
+        category = Categoria.objects.create(nombre='Privada', descripcion='')
+        activity = Actividad.objects.create(
+            codigo_evidencia='PRIV-001',
+            titulo='Actividad privada',
+            descripcion='Prueba de acceso a evidencias.',
+            categoria=category,
+        )
+
+        with TemporaryDirectory() as media_root:
+            with override_settings(MEDIA_ROOT=media_root):
+                evidence = EvidenciaActividad.objects.create(actividad=activity, imagen=image)
+                media_path = evidence.imagen.name
+                media_url = reverse('authenticated_media', kwargs={'path': media_path})
+
+                response = self.client.get(media_url)
+                self.assertRedirects(
+                    response,
+                    f"{reverse('cuentas:login')}?next={media_url}",
+                )
+
+                user_model = get_user_model()
+                no_permission_user = user_model.objects.create_user(
+                    username='sin-permisos',
+                    password='ClaveSegura123!',
+                )
+                self.client.force_login(no_permission_user)
+                self.assertEqual(self.client.get(media_url).status_code, 403)
+
+                self.client.force_login(self.supervisor)
+                response = self.client.get(media_url)
+                try:
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(response['Content-Type'], 'image/png')
+                finally:
+                    response.close()
 
     def test_default_roles_have_different_permission_levels(self):
         admin = Group.objects.get(name='Administrador')

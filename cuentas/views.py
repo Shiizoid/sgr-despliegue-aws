@@ -1,11 +1,15 @@
+import mimetypes
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
+from django.core.files.storage import default_storage
+from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 
-from actividades.models import Actividad
-from servicios.models import ServicioMunicipal, SolicitudServicio
+from actividades.models import Actividad, EvidenciaActividad
+from servicios.models import EvidenciaServicio, ServicioMunicipal, SolicitudServicio
 from .forms import PerfilPropioForm, UsuarioCreationForm, UsuarioUpdateForm
 from .models import PerfilUsuario
 from .roles import ROLE_MODELS
@@ -89,3 +93,32 @@ def editar_perfil_propio(request):
         messages.success(request, 'Tu nombre, apellido y foto de perfil se actualizaron.')
         return redirect('cuentas:perfil')
     return render(request, 'cuentas/perfil.html', {'form': form, 'perfil': perfil})
+
+
+@login_required
+def authenticated_media(request, path):
+    if path.startswith('perfiles/'):
+        exists = PerfilUsuario.objects.filter(imagen=path).exists()
+    elif path.startswith('actividades/evidencias/'):
+        exists = EvidenciaActividad.objects.filter(imagen=path).exists()
+        if exists and not request.user.has_perm('actividades.view_actividad'):
+            raise PermissionDenied
+    elif path.startswith('servicios/evidencias/'):
+        exists = EvidenciaServicio.objects.filter(imagen=path).exists()
+        if exists and not request.user.has_perm('servicios.view_serviciomunicipal'):
+            raise PermissionDenied
+    else:
+        raise Http404
+
+    if not exists:
+        raise Http404
+    if not default_storage.exists(path):
+        raise Http404
+
+    try:
+        image = default_storage.open(path, 'rb')
+    except FileNotFoundError as error:
+        raise Http404 from error
+
+    content_type = mimetypes.guess_type(path)[0] or 'application/octet-stream'
+    return FileResponse(image, content_type=content_type)

@@ -14,10 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from re import escape
+
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.views.generic import TemplateView
+
+from cuentas.views import authenticated_media
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='dashboard/portal.html'), name='home'),
@@ -26,7 +30,15 @@ urlpatterns = [
     path('servicios/', include('servicios.urls')),
 ]
 
+if settings.MEDIA_URL.startswith('/'):
+    media_prefix = settings.MEDIA_URL.strip('/')
+    urlpatterns.append(
+        re_path(
+            rf'^{escape(media_prefix)}/(?P<path>.+)$',
+            authenticated_media,
+            name='authenticated_media',
+        )
+    )
+
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    if settings.MEDIA_URL.startswith('/'):
-        urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

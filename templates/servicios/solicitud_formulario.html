@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ titulo }} | Municipalidad de La Serena{% endblock %}
+{% block breadcrumb_title %}{{ titulo }}{% endblock %}
+{% block page_eyebrow %}Atención municipal{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+{% block page_subtitle %}Selecciona un servicio y el tipo de ayuda que necesitas.{% endblock %}
+
+{% block content %}
+<section class="form-panel" aria-label="Formulario de registro de solicitud">
+    <form method="post">
+        {% csrf_token %}
+
+        <div>
+            {{ form.servicio.label_tag }}
+            {{ form.servicio }}
+            {% for error in form.servicio.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </div>
+
+        <fieldset class="request-options" id="request-options">
+            <legend>{{ form.tipo_solicitud.label }}</legend>
+            <p class="request-options-hint">Elige la opción que mejor describe tu solicitud.</p>
+            <div class="request-option-list">
+                {% for choice in form.tipo_solicitud %}
+                    <label class="request-option">
+                        {{ choice.tag }}
+                        <span>{{ choice.choice_label }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+            {% for error in form.tipo_solicitud.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </fieldset>
+
+        <div>
+            {{ form.telefono.label_tag }}
+            {{ form.telefono }}
+            {% for error in form.telefono.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div>
+            {{ form.descripcion.label_tag }}
+            {{ form.descripcion }}
+            {% if form.descripcion.help_text %}<div class="form-help">{{ form.descripcion.help_text }}</div>{% endif %}
+            {% for error in form.descripcion.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+        </div>
+
+        {% for error in form.non_field_errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+        <div class="form-actions">
+            <button type="submit" class="button" id="submit-request">Enviar solicitud</button>
+            <a href="{% url 'servicios:solicitudes' %}" class="button button-secondary">Cancelar</a>
+        </div>
+    </form>
+</section>
+
+<script>
+    const serviceSelect = document.getElementById('id_servicio');
+    const requestOptions = document.getElementById('request-options');
+
+    const updateRequestOptions = () => {
+        requestOptions.hidden = serviceSelect.value === '';
+    };
+
+    updateRequestOptions();
+    serviceSelect.addEventListener('change', updateRequestOptions);
+
+    document.querySelector('form').addEventListener('submit', () => {
+        const submitButton = document.getElementById('submit-request');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Enviando...';
+    });
+</script>
+{% endblock %}
