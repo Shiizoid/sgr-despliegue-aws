@@ -1,0 +1,17 @@
+[Unit]
+Description=SGR La Serena Django application
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/home/ec2-user/sgr-despliegue-aws
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/ec2-user/sgr-despliegue-aws/venv/bin/gunicorn config.wsgi:application --bind 0.0.0.0:8000
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

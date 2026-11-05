@@ -77,6 +77,38 @@ DEFAULT_FROM_EMAIL=no-reply@example.com
 
 Cada usuario puede actualizar su nombre, apellido y foto desde el acceso a su perfil, en la parte inferior del menú lateral. En AWS, configura `MEDIA_ROOT=/var/www/sgr-media` para que las imágenes se guarden en la carpeta servida por `deploy/sgr-media.conf`; asegúrate de que el usuario que ejecuta Django tenga permisos de escritura allí.
 
+### Mantener la aplicación activa en AWS
+
+No ejecutes `runserver` desde una sesión SSH para dejar el sitio disponible: al cerrarse esa sesión, el proceso puede detenerse. La unidad `deploy/sgr-django.service` ejecuta Django con Gunicorn bajo `systemd`, lo reinicia si falla y lo inicia al arrancar la instancia.
+
+Después de traer los cambios al EC2, desde la raíz del proyecto ejecuta:
+
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py check
+python manage.py collectstatic --noinput
+sudo cp deploy/sgr-django.service /etc/systemd/system/sgr-django.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now sgr-django
+sudo systemctl status sgr-django
+```
+
+En actualizaciones futuras, ejecuta `sudo systemctl restart sgr-django` después de actualizar el código y sus dependencias.
+
+Consulta errores del servicio con `sudo journalctl -u sgr-django -n 100 --no-pager`. La instancia debe permitir tráfico al puerto `8000` si el sitio se visita directamente por ese puerto.
+
+Para reducir los cortes SSH por inactividad desde Windows, agrega esto a `%USERPROFILE%\.ssh\config` (crea el archivo si no existe):
+
+```sshconfig
+Host *
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+```
+
+Los keepalives reducen desconexiones por inactividad, pero no evitan cortes de red ni reinicios de la instancia. El servicio `systemd` mantiene la aplicación independiente de la sesión SSH y la vuelve a iniciar tras un reinicio de EC2.
+
 Para un integrante, la implementación incluye los dos mantenedores y una transacción mínimos. Si el equipo tiene más integrantes, agrega dos mantenedores y una transacción por cada integrante adicional, según la pauta.
 
 Ejecuta las validaciones con:
