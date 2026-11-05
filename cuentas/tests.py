@@ -141,6 +141,41 @@ class CuentasAccessTests(TestCase):
         self.assertTrue(created.groups.filter(name='Supervisor').exists())
         self.assertTrue(hasattr(created, 'perfil'))
 
+    def test_duplicate_email_or_username_is_rejected_without_changing_existing_account(self):
+        self.client.force_login(self.admin)
+        supervisor_group = Group.objects.get(name='Supervisor')
+        original_password = 'ClaveSegura123!'
+        original_count = get_user_model().objects.count()
+
+        duplicate_email_response = self.client.post(reverse('cuentas:usuario_crear'), {
+            'username': 'otro-usuario',
+            'first_name': 'Intento',
+            'last_name': 'Duplicado',
+            'email': self.administrativo.email.upper(),
+            'password1': 'UnaClaveFuerte!8472',
+            'password2': 'UnaClaveFuerte!8472',
+            'rol': supervisor_group.pk,
+        })
+        self.assertEqual(duplicate_email_response.status_code, 200)
+        self.assertContains(duplicate_email_response, 'Esta cuenta ya está creada: el correo electrónico ya está en uso.')
+
+        duplicate_username_response = self.client.post(reverse('cuentas:usuario_crear'), {
+            'username': self.administrativo.username,
+            'first_name': 'Intento',
+            'last_name': 'Duplicado',
+            'email': 'otro.correo@example.com',
+            'password1': 'UnaClaveFuerte!8472',
+            'password2': 'UnaClaveFuerte!8472',
+            'rol': supervisor_group.pk,
+        })
+        self.assertEqual(duplicate_username_response.status_code, 200)
+        self.assertContains(duplicate_username_response, 'Este nombre de usuario ya está registrado. Elige otro.')
+
+        self.administrativo.refresh_from_db()
+        self.assertEqual(get_user_model().objects.count(), original_count)
+        self.assertEqual(self.administrativo.email, 'administrativo@example.com')
+        self.assertTrue(self.administrativo.check_password(original_password))
+
     def test_user_can_update_own_name_last_name_and_profile_image(self):
         image_buffer = BytesIO()
         Image.new('RGB', (8, 8), color='teal').save(image_buffer, format='PNG')

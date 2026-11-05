@@ -33,8 +33,14 @@ class UsuarioCreationForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data['email'].strip().lower()
         if self._meta.model.objects.filter(email__iexact=email).exists():
-            raise forms.ValidationError('Ya existe una cuenta con este correo electrónico.')
+            raise forms.ValidationError('Esta cuenta ya está creada: el correo electrónico ya está en uso.')
         return email
+
+    def clean_username(self):
+        username = self.cleaned_data['username'].strip()
+        if self._meta.model.objects.filter(username__iexact=username).exists():
+            raise forms.ValidationError('Este nombre de usuario ya está registrado. Elige otro.')
+        return username
 
     def save(self, commit=True):
         user = super().save(commit=commit)
@@ -73,8 +79,14 @@ class UsuarioUpdateForm(forms.ModelForm):
     def clean_email(self):
         email = self.cleaned_data['email'].strip().lower()
         if self._meta.model.objects.exclude(pk=self.instance.pk).filter(email__iexact=email).exists():
-            raise forms.ValidationError('Ya existe una cuenta con este correo electrónico.')
+            raise forms.ValidationError('Esta cuenta ya está creada: el correo electrónico ya está en uso.')
         return email
+
+    def clean_username(self):
+        username = self.cleaned_data['username'].strip()
+        if self._meta.model.objects.exclude(pk=self.instance.pk).filter(username__iexact=username).exists():
+            raise forms.ValidationError('Este nombre de usuario ya está registrado. Elige otro.')
+        return username
 
     def save(self, commit=True):
         user = super().save(commit=commit)
