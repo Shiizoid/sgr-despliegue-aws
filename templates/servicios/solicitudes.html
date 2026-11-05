@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Solicitudes de servicio | Municipalidad de La Serena{% endblock %}
+{% block breadcrumb_title %}Solicitudes de servicio{% endblock %}
+{% block page_eyebrow %}Transacción operacional{% endblock %}
+{% block page_title %}Solicitudes de servicio{% endblock %}
+{% block page_subtitle %}Registra y da seguimiento a solicitudes vinculadas con los servicios municipales.{% endblock %}
+{% block page_actions %}
+    {% if perms.servicios.add_solicitudservicio %}
+        <a class="button" href="{% url 'servicios:solicitud_crear' %}">Nueva solicitud</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<section aria-label="Listado de solicitudes">
+    <div class="toolbar">
+        <span class="record-count">Solicitudes asociadas a servicios y usuarios</span>
+        <form class="search-form" method="get" action="{% url 'servicios:solicitudes' %}">
+            <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Buscar solicitudes" aria-label="Buscar solicitudes">
+            <button class="button button-secondary" type="submit">Buscar</button>
+        </form>
+    </div>
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr><th>N.º</th><th>Servicio</th><th>Solicitante</th><th>Detalle</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr>
+            </thead>
+            <tbody>
+                {% for solicitud in solicitudes %}
+                    <tr>
+                        <td>#{{ solicitud.pk }}</td>
+                        <td>{{ solicitud.servicio.nombre_servicio }}</td>
+                        <td>{{ solicitud.solicitante.username }}<span class="row-subtitle">{{ solicitud.telefono }}</span></td>
+                        <td>{{ solicitud.descripcion|truncatewords:18 }}</td>
+                        <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
+                        <td>{{ solicitud.get_estado_display }}</td>
+                        <td>
+                            {% if perms.servicios.change_solicitudservicio %}
+                                <a class="button button-secondary button-small" href="{% url 'servicios:solicitud_estado' solicitud.pk %}">Actualizar estado</a>
+                            {% else %}
+                                <span class="evidence-empty">Consulta propia</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="7" class="empty-state">No hay solicitudes que mostrar.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -6,7 +6,9 @@
 {% block page_title %}Servicios municipales{% endblock %}
 {% block page_subtitle %}Consulta la oferta municipal y administra la información de cada servicio.{% endblock %}
 {% block page_actions %}
-    <a href="{% url 'servicios:crear' %}" class="button"><span aria-hidden="true">+</span>Agregar servicio</a>
+    {% if perms.servicios.add_serviciomunicipal %}
+        <a href="{% url 'servicios:crear' %}" class="button"><span aria-hidden="true">+</span>Agregar servicio</a>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -53,8 +55,15 @@
                         </td>
                         <td>
                             <div class="row-actions">
-                                <a href="{% url 'servicios:editar' servicio.pk %}" class="button button-secondary button-small">Modificar</a>
-                                <a href="{% url 'servicios:eliminar' servicio.pk %}" class="button button-danger button-small">Eliminar</a>
+                                {% if perms.servicios.change_serviciomunicipal %}
+                                    <a href="{% url 'servicios:editar' servicio.pk %}" class="button button-secondary button-small">Modificar</a>
+                                {% endif %}
+                                {% if perms.servicios.delete_serviciomunicipal %}
+                                    <a href="{% url 'servicios:eliminar' servicio.pk %}" class="button button-danger button-small">Eliminar</a>
+                                {% endif %}
+                                {% if not perms.servicios.change_serviciomunicipal and not perms.servicios.delete_serviciomunicipal %}
+                                    <span class="evidence-empty">Solo lectura</span>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>

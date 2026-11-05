@@ -1,5 +1,5 @@
 from django import forms
-from .models import ServicioMunicipal
+from .models import ServicioMunicipal, SolicitudServicio
 
 
 class MultipleImageInput(forms.ClearableFileInput):
@@ -37,3 +37,34 @@ class ServicioMunicipalForm(forms.ModelForm):
                 field.widget.attrs['class'] = 'form-check-input'
             else:
                 field.widget.attrs['class'] = 'form-control'
+
+
+class SolicitudServicioForm(forms.ModelForm):
+    class Meta:
+        model = SolicitudServicio
+        fields = ('servicio', 'telefono', 'descripcion')
+        labels = {
+            'servicio': 'Servicio solicitado',
+            'telefono': 'Teléfono de contacto',
+            'descripcion': 'Detalle de la solicitud',
+        }
+        widgets = {
+            'descripcion': forms.Textarea(attrs={'rows': 5, 'maxlength': 1000}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['servicio'].queryset = ServicioMunicipal.objects.filter(activo=True).order_by('nombre_servicio')
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-select' if isinstance(field.widget, forms.Select) else 'form-control'
+
+
+class SolicitudEstadoForm(forms.ModelForm):
+    class Meta:
+        model = SolicitudServicio
+        fields = ('estado',)
+        labels = {'estado': 'Estado'}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['estado'].widget.attrs['class'] = 'form-select'

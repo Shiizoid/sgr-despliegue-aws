@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Usuarios y perfiles | Municipalidad de La Serena{% endblock %}
+{% block breadcrumb_title %}Usuarios{% endblock %}
+{% block page_eyebrow %}Administración de acceso{% endblock %}
+{% block page_title %}Usuarios y perfiles{% endblock %}
+{% block page_subtitle %}Crea cuentas con correo y asigna uno de los perfiles del sistema.{% endblock %}
+{% block page_actions %}<a class="button" href="{% url 'cuentas:usuario_crear' %}">Crear usuario</a>{% endblock %}
+
+{% block content %}
+<div class="table-wrap">
+    <table class="data-table">
+        <thead><tr><th>Usuario</th><th>Nombre</th><th>Correo</th><th>Perfil</th><th>Estado</th><th>Acción</th></tr></thead>
+        <tbody>
+            {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario.username }}</td>
+                    <td>{{ usuario.get_full_name|default:"—" }}</td>
+                    <td>{{ usuario.email|default:"Sin correo" }}</td>
+                    <td>{% for grupo in usuario.groups.all %}{{ grupo.name }}{% empty %}{% if usuario.is_superuser %}Administrador{% else %}Sin perfil{% endif %}{% endfor %}</td>
+                    <td>{% if usuario.is_active %}Activo{% else %}Inactivo{% endif %}</td>
+                    <td><a class="button button-secondary button-small" href="{% url 'cuentas:usuario_editar' usuario.pk %}">Editar perfil</a></td>
+                </tr>
+            {% empty %}
+                <tr><td class="empty-state" colspan="6">Todavía no hay usuarios registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

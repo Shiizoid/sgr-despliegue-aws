@@ -6,7 +6,9 @@
 {% block page_title %}Actividades{% endblock %}
 {% block page_subtitle %}Consulta las actividades municipales y administra sus registros.{% endblock %}
 {% block page_actions %}
-    <a href="{% url 'actividades:crear' %}" class="button"><span aria-hidden="true">+</span>Agregar actividad</a>
+    {% if perms.actividades.add_actividad %}
+        <a href="{% url 'actividades:crear' %}" class="button"><span aria-hidden="true">+</span>Agregar actividad</a>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -55,8 +57,15 @@
                         </td>
                         <td>
                             <div class="row-actions">
-                                <a href="{% url 'actividades:editar' act.pk %}" class="button button-secondary button-small">Modificar</a>
-                                <a href="{% url 'actividades:eliminar' act.pk %}" class="button button-danger button-small">Eliminar</a>
+                                {% if perms.actividades.change_actividad %}
+                                    <a href="{% url 'actividades:editar' act.pk %}" class="button button-secondary button-small">Modificar</a>
+                                {% endif %}
+                                {% if perms.actividades.delete_actividad %}
+                                    <a href="{% url 'actividades:eliminar' act.pk %}" class="button button-danger button-small">Eliminar</a>
+                                {% endif %}
+                                {% if not perms.actividades.change_actividad and not perms.actividades.delete_actividad %}
+                                    <span class="evidence-empty">Solo lectura</span>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>

@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from .forms import ActividadForm
@@ -21,7 +21,7 @@ def lista_actividades(request):
 	})
 
 
-@login_required(login_url='/admin/login/')
+@permission_required('actividades.add_actividad', raise_exception=True)
 def crear_actividad(request):
 	form = ActividadForm(request.POST or None, request.FILES or None)
 	if request.method == 'POST' and form.is_valid():
@@ -37,7 +37,7 @@ def crear_actividad(request):
 	})
 
 
-@login_required(login_url='/admin/login/')
+@permission_required('actividades.change_actividad', raise_exception=True)
 def editar_actividad(request, pk):
 	actividad = get_object_or_404(Actividad, pk=pk)
 	form = ActividadForm(request.POST or None, request.FILES or None, instance=actividad)
@@ -54,7 +54,7 @@ def editar_actividad(request, pk):
 	})
 
 
-@login_required(login_url='/admin/login/')
+@permission_required('actividades.delete_actividad', raise_exception=True)
 def eliminar_actividad(request, pk):
 	actividad = get_object_or_404(Actividad, pk=pk)
 	if request.method == 'POST':

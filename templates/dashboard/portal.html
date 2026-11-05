@@ -391,6 +391,14 @@
                 <a href="{% url 'home' %}" aria-current="page"><span class="nav-mark" aria-hidden="true"></span>Inicio</a>
                 <a href="{% url 'actividades:lista' %}"><span class="nav-mark" aria-hidden="true"></span>Actividades</a>
                 <a href="{% url 'servicios:lista' %}"><span class="nav-mark" aria-hidden="true"></span>Servicios municipales</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'cuentas:dashboard' %}"><span class="nav-mark" aria-hidden="true"></span>Panel de gestión</a>
+                    {% if perms.servicios.add_solicitudservicio %}
+                        <a href="{% url 'servicios:solicitud_crear' %}"><span class="nav-mark" aria-hidden="true"></span>Registrar solicitud</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'cuentas:login' %}"><span class="nav-mark" aria-hidden="true"></span>Iniciar sesión</a>
+                {% endif %}
             </nav>
             <p class="rail-note">Portal de gestión municipal<br>Información y herramientas para la comunidad.</p>
         </aside>
