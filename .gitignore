@@ -8,3 +8,6 @@ venv/
 __pycache__/
 db.sqlite3
 .DS_Store
+
+# Archivos estáticos generados para producción
+/staticfiles/
