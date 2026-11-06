@@ -16,6 +16,7 @@ Including another URLconf
 """
 from re import escape
 
+from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path, re_path
@@ -24,6 +25,7 @@ from django.views.generic import TemplateView
 from cuentas.views import authenticated_media
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='dashboard/portal.html'), name='home'),
     path('cuentas/', include('cuentas.urls')),
     path('actividades/', include('actividades.urls')),

@@ -39,7 +39,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-La aplicación estará disponible en `http://127.0.0.1:8000/`. Inicia sesión en `http://127.0.0.1:8000/cuentas/login/`; el panel propio aparece en `http://127.0.0.1:8000/cuentas/panel/`. Django Admin no está expuesto.
+La aplicación estará disponible en `http://127.0.0.1:8000/`. Inicia sesión en `http://127.0.0.1:8000/cuentas/login/`; el panel propio aparece en `http://127.0.0.1:8000/cuentas/panel/`. El panel administrativo estándar de Django está en `http://127.0.0.1:8000/admin/` y requiere una cuenta con permisos de staff; la cuenta creada con `createsuperuser` puede acceder.
 
 ## Aplicaciones
 
@@ -52,7 +52,7 @@ El archivo `.env` y los entornos virtuales están excluidos mediante `.gitignore
 
 La aplicación continúa el proyecto anterior e incorpora:
 
-- Inicio y cierre de sesión desde páginas propias; `/admin/` no está habilitado.
+- Inicio y cierre de sesión desde páginas propias y administración estándar de Django en `/admin/`, protegida por autenticación y permisos de staff.
 - Perfiles `Administrador`, `Supervisor` y `Administrativo`, creados automáticamente al ejecutar las migraciones.
 - Mantenedores de actividades y servicios con permisos por perfil; las operaciones se hacen con Django Templates.
 - Solicitudes de servicio relacionadas con el usuario autenticado y un servicio municipal. El administrador y supervisor pueden cambiar su estado; el perfil administrativo solo consulta sus propias solicitudes.

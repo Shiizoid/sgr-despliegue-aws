@@ -102,8 +102,18 @@ class CuentasAccessTests(TestCase):
         self.client.force_login(self.admin)
         self.assertEqual(self.client.get(reverse('cuentas:usuarios')).status_code, 200)
 
-    def test_builtin_admin_site_is_not_exposed(self):
-        self.assertEqual(self.client.get('/admin/').status_code, 404)
+    def test_builtin_admin_site_requires_authentication_and_superuser_access(self):
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(f"{reverse('admin:login')}?next="))
+
+        self.client.force_login(self.administrativo)
+        response = self.client.get('/admin/')
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(f"{reverse('admin:login')}?next="))
+
+        self.client.force_login(self.superadmin)
+        self.assertEqual(self.client.get('/admin/').status_code, 200)
 
     def test_public_portal_is_available_but_data_lists_require_login(self):
         self.assertEqual(self.client.get('/').status_code, 200)
